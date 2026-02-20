@@ -1,4 +1,14 @@
 [project]
-name = "task-cli"
-version = "0.1.0"
-authors = ["Nicholas Hook"]
+name = "task_cli"
+version = "1.0.0"
+description = "A to-do list CLI"
+authors = [
+  { name = "Nicholas Hook" }
+]
+
+[project.scripts]
+task-cli = "task_cli.cli:main"
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"

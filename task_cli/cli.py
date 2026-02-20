@@ -10,6 +10,8 @@ def load_file():
             return json.load(file)   
     except json.decoder.JSONDecodeError:
         return []
+    except FileNotFoundError:
+        return []
     
 def upload_file(file_content):
     with open(file_name, "w") as file:
@@ -20,7 +22,7 @@ def invalid_op(command):
 
 def add_task(command):
     if len(command) != 2:
-        return print("Invalid command")
+        return print("\nInvalid command\n")
     
     file_content = load_file()
     new_id = int(file_content[-1]["id"])+ 1 if file_content else 1
@@ -33,39 +35,39 @@ def add_task(command):
         "createdAt": date,
         "updatedAt": date
     })
-
+    print("\nSuccessfully added task with ID:", new_id, "\n")
     upload_file(file_content)
 
 def delete_task(command):
     if len(command) != 2 or not command[1].isnumeric():
-        return print("Invalid command")
+        return print("\nInvalid command\n")
     
     file_content = load_file()
     if not file_content:
-        return print("List empty: no tasks to delete")
+        return print("\nList empty: no tasks to delete\n")
     
     for i in range(len(file_content)):
         if file_content[i]["id"] == int(command[1]):
             del file_content[i]
             upload_file(file_content)
-            return print("Successfully deleted task")
-    print("Unsuccessful: ID not in list")
+            return print("\nSuccessfully deleted task with ID", command[1], "\n")
+    print("\nUnsuccessful: ID not in list\n")
     
 def update_task(command):
     if len(command) != 3 or not command[1].isnumeric():
-        return print("Invalid command")
+        return print("\nInvalid command\n")
     
     file_content = load_file()
     if not file_content:
-        return print("List empty: no tasks to update")
+        return print("\nList empty: no tasks to update\n")
     for i in range(len(file_content)):
         if file_content[i]["id"] == int(command[1]):
             file_content[i]["description"] = command[2]
             date = list(datetime.now().timetuple())
             file_content[i]["updatedAt"] = date
             upload_file(file_content)
-            return print("Successfully updated task")
-    print("Unsuccessful: ID not in list")
+            return print("\nSuccessfully updated task with ID:", file_content[i]["id"], "\n")
+    print("\nUnsuccessful: ID not in list\n")
 
 def in_progress(command):
     if len(command) != 2 or not command[1].isnumeric():
@@ -148,7 +150,9 @@ function_list = {
     "list": print_tasks
     }
 
-def main():
+def main():  
+    if len(sys.argv) <= 1:
+        return print("Invalid command")
     command = sys.argv[1:]
     op = function_list.get(command[0], invalid_op)
     op(command)
